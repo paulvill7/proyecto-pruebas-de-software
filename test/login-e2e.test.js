@@ -7,7 +7,7 @@ const path = require('path');
 const express = require('express');
 const http = require('http');
 
-const appPath = path.resolve(__dirname, '..' );
+const appPath = path.resolve(__dirname, '..');
 const port = 3001;
 const LOGIN_URL = `http://localhost:${port}/index.html`;
 
@@ -29,7 +29,7 @@ describe('CP-07: Login Web (Prueba E2E)', () => {
             .setChromeOptions(options)
             .build();
 
-        // Start a static file server for the tests
+        // iniciar un servidor de archivos estaticos para las pruebas
         const app = express();
         app.use(express.static(appPath));
         server = http.createServer(app);
@@ -44,39 +44,39 @@ describe('CP-07: Login Web (Prueba E2E)', () => {
     });
 
     beforeEach(async () => {
-        // Navigate first to be on the origin to clear storage
+        // navegamos primero para estar en el origen y limpiar el almacenamiento
         await driver.get(LOGIN_URL);
         await driver.executeScript(`
             sessionStorage.clear();
             localStorage.clear();
             if (typeof Auth !== 'undefined') Auth.seedDefault();
         `);
-        // Navigate again to be sure we are on the login page
+        // navegamos de nuevo para estar seguros de estar en la pagina de inicio de sesion
         await driver.get(LOGIN_URL);
         await driver.wait(until.elementLocated(By.id('btnLogin')), 10000);
     });
 
-    test('Debe iniciar sesión correctamente con credenciales válidas', async () => {
-        // 1. Ingresar credenciales válidas (IDs reales: iUser, iPass)
+    test('Debe iniciar sesion correctamente con credenciales validas', async () => {
+        // 1 ingresar credenciales validas (IDs reales: iUser, iPass)
         await driver.findElement(By.id('iUser')).sendKeys('admin');
         await driver.findElement(By.id('iPass')).sendKeys('admin123');
 
-        // 2. Hacer clic en "Iniciar sesión"
+        // 2 hacer clic en "Iniciar sesion"
         await driver.findElement(By.id('btnLogin')).click();
 
-        // 3. Esperar a que aparezca el toast de bienvenida (login tiene setTimeout de 500ms)
+        // 3 esperar a que aparezca el toast de bienvenida (login tiene setTimeout de 500ms)
         await driver.wait(async () => {
             const toast = await driver.findElement(By.id('toast'));
             const classes = await toast.getAttribute('class');
             return classes.includes('show');
         }, 10000);
 
-        // 4. Validar que el toast muestra mensaje de bienvenida
+        // 4 validar que el toast muestra mensaje de bienvenida
         const toastTitle = await driver.findElement(By.id('toastTitle'));
         const mensaje = await toastTitle.getText();
         expect(mensaje).toContain('Bienvenido');
 
-        // 5. Validar que la sesión se guardó correctamente
+        // 5 validar que la sesion se guardo correctamente
         const session = await driver.executeScript(
             'return sessionStorage.getItem("642_session");'
         );
