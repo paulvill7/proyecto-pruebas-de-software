@@ -35,8 +35,12 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// ── Start ──
-app.listen(PORT, () => {
-  console.log(`\n🚀 642 APP Server running on http://localhost:${PORT}`);
-  console.log(`📡 API available at http://localhost:${PORT}/api\n`);
-});
+// ── Start (only when run directly, not when required by tests) ──
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 642 APP Server running on http://localhost:${PORT}`);
+    console.log(`📡 API available at http://localhost:${PORT}/api\n`);
+  });
+}
+
+module.exports = app;
